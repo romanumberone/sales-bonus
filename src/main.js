@@ -119,13 +119,21 @@ function analyzeSalesData(data, options) {
     seller.bonus = calculateBonus(index, sellersArray.length, seller);
   });
   // @TODO: Подготовка итоговой коллекции с нужными полями
-  return sellersArray.map((seller) => ({
-    seller_id: seller.seller_id,
-    name: seller.name,
-    revenue: +seller.revenue.toFixed(2),
-    profit: +seller.profit.toFixed(2),
-    sales_count: seller.sales_count,
-    top_products: seller.top_products || [],
-    bonus: +seller.bonus.toFixed(2),
-  }));
+  // @TODO: Подготовка итоговой коллекции с нужными полями
+  return sellersArray.map((seller) => {
+    const topProducts = Object.entries(seller.products_sold)
+      .map(([sku, quantity]) => ({ sku, quantity }))
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 10);
+
+    return {
+      seller_id: seller.seller_id,
+      name: seller.name,
+      revenue: +seller.revenue.toFixed(2),
+      profit: +seller.profit.toFixed(2),
+      sales_count: seller.sales_count,
+      top_products: topProducts,
+      bonus: +seller.bonus.toFixed(2),
+    };
+  });
 }
